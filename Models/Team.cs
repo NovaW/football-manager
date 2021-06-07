@@ -9,6 +9,7 @@ namespace FootballManager.Models
         {
             Players = new HashSet<Player>();
         }
+        public int Id { get; set; }
         public string Name { get; set; }
         public string Location { get; set; }
         public HashSet<Player> Players { get; set; }
