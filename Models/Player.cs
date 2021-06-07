@@ -10,6 +10,5 @@ namespace FootballManager.Models
         public DateTime DateOfBirth { get; set; }
         public string Nationality { get; set; }
         public Team Team { get; set; }
-
     }
 }

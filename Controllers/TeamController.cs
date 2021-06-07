@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FootballManager.Models;
@@ -12,28 +10,39 @@ namespace FootballManager.Controllers
     public class TeamController : ControllerBase
     {
 
-        [HttpGet]
-        public ActionResult<IEnumerable<Team>> GetAllTeams()
+        private ITeamRepository _teamRepository;
+
+        public TeamController(ITeamRepository teamRepository)
         {
-            throw new NotImplementedException();
+            _teamRepository = teamRepository;
         }
 
         [HttpGet]
-        public ActionResult<Team> GetTeam(int teamId)
+        public async Task<ActionResult<IEnumerable<Team>>> GetAllTeams()
         {
-            throw new NotImplementedException();
+            var results = await _teamRepository.GetAllTeams();
+            return Ok(results);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<Team>> GetTeam(int teamId)
+        {
+            var result = await _teamRepository.GetTeam(teamId);
+            return Ok(result);
         }
 
         [HttpPost]
-        public ActionResult AddTeam(Team team)
+        public async Task<ActionResult> AddTeam(Team team)
         {
-            throw new NotImplementedException();
+            await _teamRepository.AddTeam(team);
+            return Ok();
         }
 
         [HttpDelete]
-        public ActionResult RemoveTeam(int teamId)
+        public async Task<ActionResult> RemoveTeam(int teamId)
         {
-            throw new NotImplementedException();
+            await _teamRepository.RemoveTeam(teamId);
+            return Ok();
         }
     }
 }

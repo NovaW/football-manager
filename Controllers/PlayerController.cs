@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FootballManager.Models;
@@ -11,29 +9,39 @@ namespace FootballManager.Controllers
     [Route("[controller]")]
     public class PlayerController : ControllerBase
     {
+        private IPlayerRepository _playerRepository;
 
-        [HttpGet]
-        public ActionResult<IEnumerable<Player>> GetAllPlayers()
+        public PlayerController(IPlayerRepository playerRepository)
         {
-            throw new NotImplementedException();
+            _playerRepository = playerRepository;
         }
 
         [HttpGet]
-        public ActionResult<Player> GetPlayer(int playerId)
+        public async Task<ActionResult<IEnumerable<Player>>> GetAllPlayers()
         {
-            throw new NotImplementedException();
+            var results = await _playerRepository.GetAllPlayers();
+            return Ok(results);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<Player>> GetPlayer(int playerId)
+        {
+            var result = await _playerRepository.GetPlayer(playerId);
+            return Ok(result);
         }
 
         [HttpPost]
-        public ActionResult AddPlayer(Player player)
+        public async Task<ActionResult> AddPlayer(Player player)
         {
-            throw new NotImplementedException();
+            await _playerRepository.AddPlayer(player);
+            return Ok();
         }
 
         [HttpDelete]
-        public ActionResult RemovePlayer(int playerId)
+        public async Task<ActionResult> RemovePlayer(int playerId)
         {
-            throw new NotImplementedException();
+            await _playerRepository.RemovePlayer(playerId);
+            return Ok();
         }
     }
 }

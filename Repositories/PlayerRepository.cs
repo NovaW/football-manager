@@ -3,8 +3,10 @@ using FootballManager.Models;
 using System.Threading.Tasks;
 using System.Linq;
 
-namespace FootballManager{
-    public class PlayerRepository{
+namespace FootballManager
+{
+    public class PlayerRepository : IPlayerRepository
+    {
         private IQueryable<Player> Players;
         public PlayerRepository(){
             // I considered making this a dictionary to

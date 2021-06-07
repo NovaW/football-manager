@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using FootballManager.Models;
@@ -12,28 +10,39 @@ namespace FootballManager.Controllers
     public class StadiumController : ControllerBase
     {
 
-        [HttpGet]
-        public ActionResult<IEnumerable<Stadium>> GetAllStadiums()
+        private IStadiumRepository _stadiumRepository;
+
+        public StadiumController(IStadiumRepository stadiumRepository)
         {
-            throw new NotImplementedException();
+            _stadiumRepository = stadiumRepository;
+        }
+
+          [HttpGet]
+        public async Task<ActionResult<IEnumerable<Stadium>>> GetAllStadiums()
+        {
+            var results = await _stadiumRepository.GetAllStadiums();
+            return Ok(results);
         }
 
         [HttpGet]
-        public ActionResult<Stadium> GetStadium(int stadiumId)
+        public async Task<ActionResult<Stadium>> GetStadium(int stadiumId)
         {
-            throw new NotImplementedException();
+            var result = await _stadiumRepository.GetStadium(stadiumId);
+            return Ok(result);
         }
 
         [HttpPost]
-        public ActionResult AddStadium(Stadium stadium)
+        public async Task<ActionResult> AddStadium(Stadium stadium)
         {
-            throw new NotImplementedException();
+            await _stadiumRepository.AddStadium(stadium);
+            return Ok();
         }
 
         [HttpDelete]
-        public ActionResult RemoveStadium(int stadiumId)
+        public async Task<ActionResult> RemoveStadium(int stadiumId)
         {
-            throw new NotImplementedException();
+            await _stadiumRepository.RemoveStadium(stadiumId);
+            return Ok();
         }
     }
 }
