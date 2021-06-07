@@ -1,0 +1,7 @@
+# VS Code files 
+.vscode
+
+# Build related files
+bin
+obj
+publish
