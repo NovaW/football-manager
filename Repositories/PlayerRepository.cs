@@ -13,9 +13,7 @@ namespace FootballManager
         }
 
         public async Task<Player> GetPlayer(int playerId){
-            var players = await _pseudoDbContext.GetPlayers();
-            var result = players.First(x => x.Id == playerId);
-            return result; 
+            return await _pseudoDbContext.GetPlayer(playerId);
         }
 
         public async Task<IEnumerable<Player>> GetAllPlayers(){
@@ -24,17 +22,18 @@ namespace FootballManager
         }
 
         public async Task<Player> AddPlayer(Player player){
-            var result = await _pseudoDbContext.AddPlayer(player);
-            return result;
+            return await _pseudoDbContext.AddPlayer(player);
         }
 
         public async Task<Player> RemovePlayer(int playerId){
-            var player = await _pseudoDbContext.RemovePlayer(playerId);
-            return player;
+            return await _pseudoDbContext.RemovePlayer(playerId);
         }
     
         public async Task<Player> TransferPlayer(int playerId, int newTeamId) {
-            throw new System.NotImplementedException();
+            var player = await _pseudoDbContext.GetPlayer(playerId);
+            await _pseudoDbContext.RemovePlayer(playerId);
+            player.TeamId = newTeamId;
+            return await _pseudoDbContext.AddPlayer(player);
         }
     }
 }

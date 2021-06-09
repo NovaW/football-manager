@@ -13,9 +13,7 @@ namespace FootballManager
         }
 
         public async Task<Stadium> GetStadium(int stadiumId){
-            var stadiums = await _pseudoDbContext.GetStadiums();
-            var result = stadiums.First(x => x.Id == stadiumId);
-            return result; 
+            return await _pseudoDbContext.GetStadium(stadiumId);
         }
 
         public async Task<IEnumerable<Stadium>> GetAllStadiums(){
@@ -24,17 +22,16 @@ namespace FootballManager
         }
 
         public async Task<Stadium> AddStadium(Stadium stadium){
-            var result = await _pseudoDbContext.AddStadium(stadium);
-            return result;
+            return await _pseudoDbContext.AddStadium(stadium);
         }
 
         public async Task<Stadium> RemoveStadium(int stadiumId){
-            var stadium = await _pseudoDbContext.RemoveStadium(stadiumId);
-            return stadium;
+            return await _pseudoDbContext.RemoveStadium(stadiumId);
         }
 
         public async Task<Stadium> LinkStadiumToTeam(int stadiumId, int teamId){
-            throw new System.NotImplementedException();
+            await _pseudoDbContext.LinkTeamAndStadium(teamId, stadiumId);
+            return await _pseudoDbContext.GetStadium(stadiumId);
         }
     }
 }
