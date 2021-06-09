@@ -28,15 +28,18 @@ namespace FootballManager
             return results;
         }
 
-        public async Task AddPlayer(Player player){
+        public async Task<Player> AddPlayer(Player player){
             var maxId = Players.Count() == 0 ? 1 : Players.Max(x => x.Id);
             player.Id = maxId++; //normally entity framework assigns IDs, but this works
             Players = Players.Append(player);
+            return player;
         }
 
-        public async Task RemovePlayer(int playerId){
+        public async Task<Player> RemovePlayer(int playerId){
             // Would normally use the DbContext.Remove method
+            var player = Players.First(x => x.Id == playerId);
             Players = Players.Where(x => x.Id != playerId);
+            return player;
         }
     }
 }

@@ -8,7 +8,7 @@ namespace FootballManager
     {
         Task<Player> GetPlayer(int playerId);
         Task<IEnumerable<Player>> GetAllPlayers();
-        Task AddPlayer(Player player);
-        Task RemovePlayer(int playerId);
+        Task<Player> AddPlayer(Player player);
+        Task<Player> RemovePlayer(int playerId);
     }
 }

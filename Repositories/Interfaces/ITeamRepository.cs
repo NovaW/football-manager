@@ -7,7 +7,7 @@ namespace FootballManager {
     {
         Task<Team> GetTeam(int teamId);
         Task<IEnumerable<Team>> GetAllTeams();
-        Task AddTeam(Team team);
-        Task RemoveTeam(int teamId);
+        Task<Team> AddTeam(Team team);
+        Task<Team> RemoveTeam(int teamId);
     }
 }

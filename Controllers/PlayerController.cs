@@ -28,13 +28,16 @@ namespace FootballManager.Controllers
         public async Task<ActionResult<Player>> GetPlayer(int playerId)
         {
             var result = await _playerRepository.GetPlayer(playerId);
+            if(result == null){
+                return NotFound();
+            }
             return Ok(result);
         }
 
         [HttpPost]
         public async Task<ActionResult> AddPlayer(Player player)
         {
-            await _playerRepository.AddPlayer(player);
+            var result = await _playerRepository.AddPlayer(player);
             return Ok();
         }
 
@@ -42,7 +45,10 @@ namespace FootballManager.Controllers
         [Route("{playerId}")]
         public async Task<ActionResult> RemovePlayer(int playerId)
         {
-            await _playerRepository.RemovePlayer(playerId);
+            var result = await _playerRepository.RemovePlayer(playerId);
+            if(result == null){
+                return NotFound();
+            }
             return Ok();
         }
     }

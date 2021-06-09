@@ -29,6 +29,9 @@ namespace FootballManager.Controllers
         public async Task<ActionResult<Stadium>> GetStadium(int stadiumId)
         {
             var result = await _stadiumRepository.GetStadium(stadiumId);
+            if(result == null){
+                return NotFound();
+            }
             return Ok(result);
         }
 
@@ -43,7 +46,10 @@ namespace FootballManager.Controllers
         [Route("{stadiumId}")]
         public async Task<ActionResult> RemoveStadium(int stadiumId)
         {
-            await _stadiumRepository.RemoveStadium(stadiumId);
+            var result = await _stadiumRepository.RemoveStadium(stadiumId);
+            if(result == null){
+                return NotFound();
+            }
             return Ok();
         }
     }
