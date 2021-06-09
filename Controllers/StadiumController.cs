@@ -17,7 +17,7 @@ namespace FootballManager.Controllers
             _stadiumRepository = stadiumRepository;
         }
 
-          [HttpGet]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<Stadium>>> GetAllStadiums()
         {
             var results = await _stadiumRepository.GetAllStadiums();
@@ -25,6 +25,7 @@ namespace FootballManager.Controllers
         }
 
         [HttpGet]
+        [Route("{stadiumId}")]
         public async Task<ActionResult<Stadium>> GetStadium(int stadiumId)
         {
             var result = await _stadiumRepository.GetStadium(stadiumId);
@@ -39,6 +40,7 @@ namespace FootballManager.Controllers
         }
 
         [HttpDelete]
+        [Route("{stadiumId}")]
         public async Task<ActionResult> RemoveStadium(int stadiumId)
         {
             await _stadiumRepository.RemoveStadium(stadiumId);

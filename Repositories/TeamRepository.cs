@@ -23,13 +23,13 @@ namespace FootballManager
             return result; 
         }
 
-        public async Task<IEnumerable<Team>> GetTeams(){
+        public async Task<IEnumerable<Team>> GetAllTeams(){
             var results = Teams.Select(x => x).AsEnumerable();
             return results;
         }
 
         public async Task AddTeam(Team team){
-            var maxId = Teams.Max(x => x.Id);
+            var maxId = Teams.Count() == 0 ? 1 : Teams.Max(x => x.Id);
             team.Id = maxId++; //normally entity framework assigns IDs, but this works
             Teams = Teams.Append(team);
         }

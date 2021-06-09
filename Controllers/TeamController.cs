@@ -25,6 +25,7 @@ namespace FootballManager.Controllers
         }
 
         [HttpGet]
+        [Route("{teamId}")]
         public async Task<ActionResult<Team>> GetTeam(int teamId)
         {
             var result = await _teamRepository.GetTeam(teamId);
@@ -39,6 +40,7 @@ namespace FootballManager.Controllers
         }
 
         [HttpDelete]
+        [Route("{teamId}")]
         public async Task<ActionResult> RemoveTeam(int teamId)
         {
             await _teamRepository.RemoveTeam(teamId);
