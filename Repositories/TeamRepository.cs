@@ -7,39 +7,42 @@ namespace FootballManager
 {
     public class TeamRepository : ITeamRepository
     {
-        private IQueryable<Team> Teams;
-        public TeamRepository(){
-            // I considered making this a dictionary to
-            // ensure ID uniqueness, but figured an IQueryable
-            // was more realistic. Right now IDs can clash
-            Teams = new Team[] {}.AsQueryable();
+        private IPseudoDbContext _pseudoDbContext;
+        public TeamRepository(IPseudoDbContext pseudoDbContext){
+            _pseudoDbContext = pseudoDbContext;
         }
 
-        // This method is synchronous, but I imagine a real DB
-        // would be used at some point in the future, so I'm doing
-        // this in preparation. Same story with the other methods.
         public async Task<Team> GetTeam(int teamId){
-            var result = Teams.First(x => x.Id == teamId);
+            var teams = await _pseudoDbContext.GetTeams();
+            var result = teams.First(x => x.Id == teamId);
             return result; 
         }
 
         public async Task<IEnumerable<Team>> GetAllTeams(){
-            var results = Teams.Select(x => x).AsEnumerable();
-            return results;
+            var results = await _pseudoDbContext.GetTeams();
+            return results.AsEnumerable();
         }
 
         public async Task<Team> AddTeam(Team team){
-            var maxId = Teams.Count() == 0 ? 1 : Teams.Max(x => x.Id);
-            team.Id = maxId++; //normally entity framework assigns IDs, but this works
-            Teams = Teams.Append(team);
-            return team;
+            var result = await _pseudoDbContext.AddTeam(team);
+            return result;
         }
 
         public async Task<Team> RemoveTeam(int teamId){
-            // Would normally use the DbContext.Remove method
-            var team = Teams.First(x => x.Id == teamId);
-            Teams = Teams.Where(x => x.Id != teamId);
+            var team = await _pseudoDbContext.RemoveTeam(teamId);
             return team;
+        }
+
+        public async Task<Team> AddPlayersToTeam(int teamId, IEnumerable<Player> players){
+            throw new System.NotImplementedException();
+        }
+
+        public async Task<Team> AddPlayersToTeamUsingIds(int teamId, IEnumerable<int> playerIds){
+            throw new System.NotImplementedException();
+        }
+
+        public async Task<Team> LinkTeamToStadium(int teamId, int stadiumId){
+            throw new System.NotImplementedException();
         }
     }
 }

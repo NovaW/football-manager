@@ -25,6 +25,7 @@ namespace FootballManager
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "FootballManager", Version = "v1" });
             });
+            services.AddSingleton<IPseudoDbContext, PseudoDbContext>();
             services.AddSingleton<IPlayerRepository, PlayerRepository>();
             services.AddSingleton<IStadiumRepository, StadiumRepository>();
             services.AddSingleton<ITeamRepository, TeamRepository>();

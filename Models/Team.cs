@@ -13,6 +13,7 @@ namespace FootballManager.Models
         public string Name { get; set; }
         public string Location { get; set; }
         public HashSet<Player> Players { get; set; }
+        public int HomeStadiumId { get; set; }
 
         public Stadium HomeStadium { get; set; }
     }

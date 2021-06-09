@@ -7,39 +7,34 @@ namespace FootballManager
 {
     public class StadiumRepository : IStadiumRepository
     {
-        private IQueryable<Stadium> Stadiums;
-        public StadiumRepository(){
-            // I considered making this a dictionary to
-            // ensure ID uniqueness, but figured an IQueryable
-            // was more realistic. Right now IDs can clash
-            Stadiums = new Stadium[] {}.AsQueryable();
+        private IPseudoDbContext _pseudoDbContext;
+        public StadiumRepository(IPseudoDbContext pseudoDbContext){
+            _pseudoDbContext = pseudoDbContext;
         }
 
-        // This method is synchronous, but I imagine a real DB
-        // would be used at some point in the future, so I'm doing
-        // this in preparation. Same story with the other methods.
         public async Task<Stadium> GetStadium(int stadiumId){
-            var result = Stadiums.First(x => x.Id == stadiumId);
+            var stadiums = await _pseudoDbContext.GetStadiums();
+            var result = stadiums.First(x => x.Id == stadiumId);
             return result; 
         }
 
         public async Task<IEnumerable<Stadium>> GetAllStadiums(){
-            var results = Stadiums.Select(x => x).AsEnumerable();
-            return results;
+            var results = await _pseudoDbContext.GetStadiums();
+            return results.AsEnumerable();
         }
 
         public async Task<Stadium> AddStadium(Stadium stadium){
-            var maxId = Stadiums.Count() == 0 ? 1 : Stadiums.Max(x => x.Id);
-            stadium.Id = maxId++; //normally entity framework assigns IDs, but this works
-            Stadiums = Stadiums.Append(stadium);
-            return stadium;
+            var result = await _pseudoDbContext.AddStadium(stadium);
+            return result;
         }
 
         public async Task<Stadium> RemoveStadium(int stadiumId){
-            // Would normally use the DbContext.Remove method
-            var stadium = Stadiums.First(x => x.Id == stadiumId);
-            Stadiums = Stadiums.Where(x => x.Id != stadiumId);
+            var stadium = await _pseudoDbContext.RemoveStadium(stadiumId);
             return stadium;
+        }
+
+        public async Task<Stadium> LinkStadiumToTeam(int stadiumId, int teamId){
+            throw new System.NotImplementedException();
         }
     }
 }
