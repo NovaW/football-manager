@@ -94,8 +94,11 @@ namespace FootballManager {
             }else{
                 team.Id = _teams.Keys.Max() + 1;
             }
-
-            VerifyTeamExists(team.HomeStadiumId);
+            
+            foreach(var player in team.Players){
+                VerifyPlayerExists(player.Id);
+            }
+            VerifyStadiumExists(team.HomeStadiumId);
 
             _teams.Add(team.Id, team);
             return team;
