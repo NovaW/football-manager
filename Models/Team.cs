@@ -7,12 +7,12 @@ namespace FootballManager.Models
     {
         public Team()
         {
-            Players = new HashSet<Player>();
+            Players = new Player[] {};
         }
         public int Id { get; set; }
         public string Name { get; set; }
         public string Location { get; set; }
-        public HashSet<Player> Players { get; set; }
+        public IEnumerable<Player> Players { get; set; }
         public int? HomeStadiumId { get; set; }
 
         public Stadium HomeStadium { get; set; }

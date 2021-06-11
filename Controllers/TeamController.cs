@@ -36,21 +36,46 @@ namespace FootballManager.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddTeam(Team team)
+        public async Task<ActionResult<Team>> AddTeam(Team team)
         {
-            await _teamRepository.AddTeam(team);
-            return Ok();
+            var result = await _teamRepository.AddTeam(team);
+            return Ok(result);
         }
 
         [HttpDelete]
         [Route("{teamId}")]
-        public async Task<ActionResult> RemoveTeam(int teamId)
+        public async Task<ActionResult<Team>> RemoveTeam(int teamId)
         {
             var result = await _teamRepository.RemoveTeam(teamId);
             if(result == null){
                 return NotFound();
             }
-            return Ok();
+            return Ok(result);
         }
+
+        [HttpPost]
+        [Route("AddPlayersToTeam&teamId={teamId}")]
+        public async Task<ActionResult<Team>> AddPlayersToTeam(int teamId, IEnumerable<Player> players)
+        {
+            var result = await _teamRepository.AddPlayersToTeam(teamId, players);
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("AddPlayersToTeamUsingIds&teamId={teamId}")]
+        public async Task<ActionResult<Team>> AddPlayersToTeamUsingIds(int teamId, IEnumerable<int> playerIds)
+        {
+            var result = await _teamRepository.AddPlayersToTeamUsingIds(teamId, playerIds);
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("LinkTeamToStadium&teamId={teamId}&stadiumId={stadiumId}")]
+        public async Task<ActionResult<Team>> LinkTeamToStadium(int teamId, int stadiumId)
+        {
+            var result = await _teamRepository.LinkTeamToStadium(teamId, stadiumId);
+            return Ok(result);
+        }
+
     }
 }

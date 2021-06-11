@@ -36,21 +36,28 @@ namespace FootballManager.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddStadium(Stadium stadium)
+        public async Task<ActionResult<Stadium>> AddStadium(Stadium stadium)
         {
-            await _stadiumRepository.AddStadium(stadium);
-            return Ok();
+            var result = await _stadiumRepository.AddStadium(stadium);
+            return Ok(result);
         }
 
         [HttpDelete]
         [Route("{stadiumId}")]
-        public async Task<ActionResult> RemoveStadium(int stadiumId)
+        public async Task<ActionResult<Stadium>> RemoveStadium(int stadiumId)
         {
             var result = await _stadiumRepository.RemoveStadium(stadiumId);
             if(result == null){
                 return NotFound();
             }
-            return Ok();
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("LinkStadiumToTeam&stadiumId={stadiumId}&teamId={teamId}")]
+        public async Task<ActionResult<Stadium>> LinkStadiumToTeam(int stadiumId, int teamId){
+            var result = await _stadiumRepository.LinkStadiumToTeam(stadiumId, teamId);
+            return Ok(result);
         }
     }
 }
