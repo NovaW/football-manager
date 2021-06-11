@@ -55,17 +55,9 @@ namespace FootballManager.Controllers
 
         [HttpPost]
         [Route("AddPlayersToTeam&teamId={teamId}")]
-        public async Task<ActionResult<Team>> AddPlayersToTeam(int teamId, IEnumerable<Player> players)
+        public async Task<ActionResult<Team>> AddPlayersToTeam(int teamId, IEnumerable<int> playerIds)
         {
-            var result = await _teamRepository.AddPlayersToTeam(teamId, players);
-            return Ok(result);
-        }
-
-        [HttpPost]
-        [Route("AddPlayersToTeamUsingIds&teamId={teamId}")]
-        public async Task<ActionResult<Team>> AddPlayersToTeamUsingIds(int teamId, IEnumerable<int> playerIds)
-        {
-            var result = await _teamRepository.AddPlayersToTeamUsingIds(teamId, playerIds);
+            var result = await _teamRepository.AddPlayersToTeam(teamId, playerIds);
             return Ok(result);
         }
 

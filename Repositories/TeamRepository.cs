@@ -30,29 +30,19 @@ namespace FootballManager
             return await _pseudoDbContext.RemoveTeam(teamId);
         }
 
-        public async Task<Team> AddPlayersToTeam(int teamId, IEnumerable<Player> players){
-            foreach(var player in players){
-                var playerDbEntry = await _pseudoDbContext.GetPlayer(player.Id);
-                if(playerDbEntry != null){
-                    //player already exists in the DB so we check if the models match
-                    if(player.DetailsMatch(playerDbEntry)){
-                        //if they do, we'll remove the old model
-                        await _pseudoDbContext.RemovePlayer(player.Id);
-                    }
-                    else{
-                        throw new ArgumentException($"Details given for player with Id {player.Id} doesn't match with existing player in system.");
-                    }
-                 }
-                player.TeamId = teamId;
-                await _pseudoDbContext.AddPlayer(player);
-            }
-            return await _pseudoDbContext.GetTeam(teamId);
-        }
+        public async Task<Team> AddPlayersToTeam(int teamId, IEnumerable<int> playerIds){
 
-        public async Task<Team> AddPlayersToTeamUsingIds(int teamId, IEnumerable<int> playerIds){
+            var players = new List<Player>();
             foreach(var id in playerIds){
                 var player = await _pseudoDbContext.GetPlayer(id);
-                await _pseudoDbContext.RemovePlayer(id);
+                players.Add(player);
+                if(player == null){
+                    throw new ArgumentException($"No player with Id {id} exists.");
+                }
+            }
+            
+            foreach(var player in players){
+                await _pseudoDbContext.RemovePlayer(player.Id);
                 player.TeamId = teamId;
                 await _pseudoDbContext.AddPlayer(player);
             }
