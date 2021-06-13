@@ -1,6 +1,9 @@
 # VS Code files 
 .vscode
 
+# VS files
+.vs
+
 # Build related files
 bin
 obj
