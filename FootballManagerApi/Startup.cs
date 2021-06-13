@@ -10,6 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using FootballManagerApi.Models;
+using FootballManagerApi.Contexts;
+
 namespace FootballManagerApi
 {
     public class Startup
@@ -25,7 +28,7 @@ namespace FootballManagerApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddSingleton<IPseudoDbContext, PseudoDbContext>();
+            services.AddTransient<FootballManagerContext, FootballManagerContext>();
             services.AddSingleton<IPlayerRepository, PlayerRepository>();
             services.AddSingleton<IStadiumRepository, StadiumRepository>();
             services.AddSingleton<ITeamRepository, TeamRepository>();

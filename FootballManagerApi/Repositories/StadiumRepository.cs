@@ -2,36 +2,36 @@ using System.Collections.Generic;
 using FootballManagerApi.Models;
 using System.Threading.Tasks;
 using System.Linq;
+using FootballManagerApi.Contexts;
+using System;
 
 namespace FootballManagerApi
 {
     public class StadiumRepository : IStadiumRepository
     {
-        private IPseudoDbContext _pseudoDbContext;
-        public StadiumRepository(IPseudoDbContext pseudoDbContext){
-            _pseudoDbContext = pseudoDbContext;
+        private FootballManagerContext _dbContext;
+        public StadiumRepository(FootballManagerContext dbContext){
+            _dbContext = dbContext;
         }
 
         public async Task<Stadium> GetStadium(int stadiumId){
-            return await _pseudoDbContext.GetStadium(stadiumId);
+            throw new NotImplementedException();
         }
 
         public async Task<IEnumerable<Stadium>> GetAllStadiums(){
-            var results = await _pseudoDbContext.GetStadiums();
-            return results.AsEnumerable();
+            throw new NotImplementedException();
         }
 
         public async Task<Stadium> AddStadium(Stadium stadium){
-            return await _pseudoDbContext.AddStadium(stadium);
+            throw new NotImplementedException();
         }
 
         public async Task<Stadium> RemoveStadium(int stadiumId){
-            return await _pseudoDbContext.RemoveStadium(stadiumId);
+            throw new NotImplementedException();
         }
 
         public async Task<Stadium> LinkStadiumToTeam(int stadiumId, int teamId){
-            var result = await _pseudoDbContext.LinkTeamAndStadium(teamId, stadiumId);
-            return result.Stadium;
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,11 +1,14 @@
-﻿namespace FootballManagerApi.Models
+﻿using System;
+using System.Collections.Generic;
+
+namespace FootballManagerApi.Models
 {
-    public class Stadium
+    public partial class Stadium
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string Name { get; set; }
         public string Location { get; set; }
-        public int? HomeTeamId { get; set; }
-        public Team HomeTeam { get; set; }
+        public StadiumTeamLink StadiumTeamLink { get; set; }
+        public long? StadiumTeamLink_StadiumId { get; set; }
     }
 }

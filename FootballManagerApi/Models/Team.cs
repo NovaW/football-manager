@@ -1,20 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 
 namespace FootballManagerApi.Models
 {
-    public class Team
+    public partial class Team
     {
-        public Team()
-        {
-            Players = new Player[] {};
-        }
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string Name { get; set; }
-        public string Location { get; set; }
         public IEnumerable<Player> Players { get; set; }
-        public int? HomeStadiumId { get; set; }
-
-        public Stadium HomeStadium { get; set; }
+        public StadiumTeamLink StadiumTeamLink { get; set; }
+        public long? StadiumTeamLink_TeamId { get; set; }
     }
 }
