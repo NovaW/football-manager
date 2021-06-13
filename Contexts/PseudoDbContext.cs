@@ -11,10 +11,19 @@ namespace FootballManager {
             _players = new Dictionary<int, Player>();
             _stadiums = new Dictionary<int, Stadium>();
             _teams = new Dictionary<int, Team>();
+
+            _deletedPlayerIds = new List<int>();
+            _deletedStadiumIds = new List<int>();
+            _deletedTeamIds = new List<int>();
         }
         private Dictionary<int, Player> _players;
         private Dictionary<int, Stadium> _stadiums;
         private Dictionary<int, Team> _teams;
+
+
+        private List<int> _deletedPlayerIds;
+        private List<int> _deletedStadiumIds;
+        private List<int> _deletedTeamIds;
 
         public async Task<Player> GetPlayer(int playerId) {
             if(!_players.ContainsKey(playerId)) { return null; }
@@ -32,7 +41,7 @@ namespace FootballManager {
             if(!_teams.ContainsKey(teamId)) { return null; }
             var team = _teams[teamId];
             team.HomeStadium = team.HomeStadiumId.HasValue ? _stadiums[team.HomeStadiumId.Value] : null;
-            team.Players = _players.Values.Where(x => x.TeamId == team.Id).ToHashSet();
+            team.Players = _players.Values.Where(x => x.TeamId == team.Id);
             return team;
         }
 
@@ -57,81 +66,126 @@ namespace FootballManager {
             var players = _players.Values;
             foreach(var team in teams){
                 team.HomeStadium = team.HomeStadiumId.HasValue ? _stadiums[team.HomeStadiumId.Value] : null;
-                team.Players = players.Where(x => x.TeamId == team.Id).ToHashSet();
+                team.Players = players.Where(x => x.TeamId == team.Id);
             }
             return teams.AsQueryable();
         }
 
         public async Task<Player> AddPlayer(Player player){
-            if(_players.Count == 0){
-                player.Id = 1;
-            }else{
-                player.Id = _players.Keys.Max() + 1;
-            }
-
             VerifyTeamExists(player.TeamId);
+            player.Team = null;
+
+            player.Id = _players.Keys.Union(_deletedPlayerIds)
+                            .DefaultIfEmpty(0)
+                            .Max() + 1;
 
             _players.Add(player.Id, player);
-            return player;
+        
+            return _players[player.Id];
         }
 
         public async Task<Stadium> AddStadium(Stadium stadium){
-            if(_stadiums.Count == 0){
-                stadium.Id = 1;
-            }else{
-                stadium.Id = _stadiums.Keys.Max() + 1;
-            }
-
             VerifyTeamExists(stadium.HomeTeamId);
+            stadium.HomeTeam = null;
+
+            stadium.Id = _stadiums.Keys.Union(_deletedStadiumIds)
+                            .DefaultIfEmpty(0)
+                            .Max() + 1;
 
             _stadiums.Add(stadium.Id, stadium);
-            return stadium;
+
+            if(stadium.HomeTeamId.HasValue){
+                _teams[stadium.HomeTeamId.Value].HomeStadiumId = stadium.Id;
+            }
+
+            return _stadiums[stadium.Id];
         }
 
         public async Task<Team> AddTeam(Team team){
-            if(_teams.Count == 0){
-                team.Id = 1;
-            }else{
-                team.Id = _teams.Keys.Max() + 1;
-            }
-            
-            foreach(var player in team.Players){
-                VerifyPlayerExists(player.Id);
-            }
             VerifyStadiumExists(team.HomeStadiumId);
+            team.HomeStadium = null;
+            team.Players = null;
+            
+            team.Id = _teams.Keys.Union(_deletedTeamIds)
+                        .DefaultIfEmpty(0)
+                        .Max() + 1;
 
             _teams.Add(team.Id, team);
-            return team;
+            return _teams[team.Id];
         }
 
         public async Task<Player> RemovePlayer(int playerId){
             if(!_players.ContainsKey(playerId)) { return null; }
             var player = _players[playerId];
             _players.Remove(playerId);
+            _deletedPlayerIds.Add(playerId);
             return player;
         }
 
         public async Task<Stadium> RemoveStadium(int stadiumId){
             if(!_stadiums.ContainsKey(stadiumId)) { return null; }
+
+            // remove links to stadium in teams
+            foreach(var team in _teams){
+                if(team.Value.HomeStadiumId == stadiumId){
+                    team.Value.HomeStadiumId = null;
+                }
+            }
+
             var stadium = _stadiums[stadiumId];
             _stadiums.Remove(stadiumId);
+            _deletedStadiumIds.Add(stadiumId);
             return stadium;
         }
 
         public async Task<Team> RemoveTeam(int teamId){
             if(!_teams.ContainsKey(teamId)) { return null; }
+
+            // remove links to team in stadiums
+            foreach(var stadium in _stadiums){
+                if(stadium.Value.HomeTeamId == teamId){
+                    stadium.Value.HomeTeamId = null;
+                }
+            }
+
             var team = _teams[teamId];
             _teams.Remove(teamId);
+            _deletedTeamIds.Add(teamId);
             return team;
         }
 
-        public async Task LinkTeamAndStadium(int teamId, int stadiumId){
+        public async Task<(Team Team, Stadium Stadium)> LinkTeamAndStadium(int teamId, int stadiumId){
             VerifyTeamExists(teamId);
             VerifyStadiumExists(stadiumId);
 
             _teams[teamId].HomeStadiumId = stadiumId;
             _stadiums[stadiumId].HomeTeamId = teamId;
+
+            return (_teams[teamId], _stadiums[stadiumId]);
         }
+
+        public async Task<Player> TransferPlayer(int playerId, int newTeamId) {
+            VerifyPlayerExists(playerId);
+            VerifyTeamExists(newTeamId);
+            
+            _players[playerId].TeamId = newTeamId;
+
+            return _players[playerId];
+        }
+
+        public async Task<Team> AddPlayersToTeam(int teamId, IEnumerable<int> playerIds) {
+            VerifyTeamExists(teamId);
+
+            foreach(var id in playerIds){
+                VerifyPlayerExists(id);
+            }
+            
+            foreach(var id in playerIds){
+                _players[id].TeamId = teamId;
+            }
+            return _teams[teamId];
+        }
+ 
 
         private void VerifyPlayerExists(int? playerId){
             if(playerId.HasValue && !_players.ContainsKey(playerId.Value)){

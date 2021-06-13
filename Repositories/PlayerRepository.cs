@@ -30,19 +30,20 @@ namespace FootballManager
         }
     
         public async Task<Player> TransferPlayer(int playerId, int newTeamId) {
-            var player = await _pseudoDbContext.GetPlayer(playerId);
-            if(player == null) {
-                throw new ArgumentException($"No player with Id {playerId} exists.");
-            }
+            return await _pseudoDbContext.TransferPlayer(playerId, newTeamId);
+            // var player = await _pseudoDbContext.GetPlayer(playerId);
+            // if(player == null) {
+            //     throw new ArgumentException($"No player with Id {playerId} exists.");
+            // }
 
-            var team = await _pseudoDbContext.GetTeam(newTeamId);
-            if(team == null) {
-                throw new ArgumentException($"No team with Id {newTeamId} exists.");
-            }
+            // var team = await _pseudoDbContext.GetTeam(newTeamId);
+            // if(team == null) {
+            //     throw new ArgumentException($"No team with Id {newTeamId} exists.");
+            // }
 
-            await _pseudoDbContext.RemovePlayer(playerId);
-            player.TeamId = newTeamId;
-            return await _pseudoDbContext.AddPlayer(player);
+            // await _pseudoDbContext.RemovePlayer(playerId);
+            // player.TeamId = newTeamId;
+            // return await _pseudoDbContext.AddPlayer(player);
         }
     }
 }

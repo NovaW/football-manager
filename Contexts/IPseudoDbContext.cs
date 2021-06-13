@@ -21,6 +21,8 @@ namespace FootballManager {
         Task<Stadium> RemoveStadium(int stadiumId);
         Task<Team> RemoveTeam(int teamId);
 
-        Task LinkTeamAndStadium(int teamId, int stadiumId);
+        Task<(Team Team, Stadium Stadium)> LinkTeamAndStadium(int teamId, int stadiumId);
+        Task<Player> TransferPlayer(int playerId, int newTeamId);
+        Task<Team> AddPlayersToTeam(int teamId, IEnumerable<int> playerIds);
     }
 }

@@ -32,26 +32,28 @@ namespace FootballManager
 
         public async Task<Team> AddPlayersToTeam(int teamId, IEnumerable<int> playerIds){
 
-            var players = new List<Player>();
-            foreach(var id in playerIds){
-                var player = await _pseudoDbContext.GetPlayer(id);
-                players.Add(player);
-                if(player == null){
-                    throw new ArgumentException($"No player with Id {id} exists.");
-                }
-            }
+            return await _pseudoDbContext.AddPlayersToTeam(teamId, playerIds);
+
+            // var players = new List<Player>();
+            // foreach(var id in playerIds){
+            //     var player = await _pseudoDbContext.GetPlayer(id);
+            //     players.Add(player);
+            //     if(player == null){
+            //         throw new ArgumentException($"No player with Id {id} exists.");
+            //     }
+            // }
             
-            foreach(var player in players){
-                await _pseudoDbContext.RemovePlayer(player.Id);
-                player.TeamId = teamId;
-                await _pseudoDbContext.AddPlayer(player);
-            }
-            return await _pseudoDbContext.GetTeam(teamId);
+            // foreach(var player in players){
+            //     await _pseudoDbContext.RemovePlayer(player.Id);
+            //     player.TeamId = teamId;
+            //     await _pseudoDbContext.AddPlayer(player);
+            // }
+            // return await _pseudoDbContext.GetTeam(teamId);
         }
 
         public async Task<Team> LinkTeamToStadium(int teamId, int stadiumId){
-            await _pseudoDbContext.LinkTeamAndStadium(teamId, stadiumId);
-            return await _pseudoDbContext.GetTeam(teamId);
+            var result = await _pseudoDbContext.LinkTeamAndStadium(teamId, stadiumId);
+            return result.Team;
         }
     }
 }

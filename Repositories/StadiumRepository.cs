@@ -30,8 +30,8 @@ namespace FootballManager
         }
 
         public async Task<Stadium> LinkStadiumToTeam(int stadiumId, int teamId){
-            await _pseudoDbContext.LinkTeamAndStadium(teamId, stadiumId);
-            return await _pseudoDbContext.GetStadium(stadiumId);
+            var result = await _pseudoDbContext.LinkTeamAndStadium(teamId, stadiumId);
+            return result.Stadium;
         }
     }
 }
