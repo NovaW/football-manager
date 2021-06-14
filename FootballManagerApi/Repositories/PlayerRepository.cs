@@ -53,7 +53,10 @@ namespace FootballManagerApi
         }
     
         public async Task<Player> TransferPlayer(int playerId, int newTeamId) {
-            throw new NotImplementedException();
+            var player = await _dbContext.Player.FindAsync((long)playerId);
+            player.TeamId = newTeamId;
+            await _dbContext.SaveChangesAsync();
+            return await GetPlayer(playerId);
         }
 
         private static Player SanitizePlayer(Player player)

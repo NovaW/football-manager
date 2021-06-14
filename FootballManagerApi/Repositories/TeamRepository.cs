@@ -59,7 +59,13 @@ namespace FootballManagerApi
 
         public async Task<Team> AddPlayersToTeam(int teamId, IEnumerable<int> playerIds)
         {
-            throw new NotImplementedException();
+            var players = _dbContext.Player.Where(x => playerIds.Contains((int)x.Id));
+            foreach (var player in players)
+            {
+                player.TeamId = teamId;
+            }
+            await _dbContext.SaveChangesAsync();
+            return await GetTeam(teamId);
         }
 
         public async Task<Team> LinkTeamToStadium(int teamId, int stadiumId) {

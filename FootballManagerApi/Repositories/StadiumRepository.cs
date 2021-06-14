@@ -55,7 +55,18 @@ namespace FootballManagerApi
         }
 
         public async Task<Stadium> LinkStadiumToTeam(int stadiumId, int teamId){
-            throw new NotImplementedException();
+            var existingLinks = _dbContext.StadiumTeam
+                .Where(x => x.TeamId == teamId || x.StadiumId == stadiumId);
+            _dbContext.RemoveRange(existingLinks);
+
+            await _dbContext.SaveChangesAsync();
+
+            _dbContext.StadiumTeam
+                .Add(new StadiumTeam { TeamId = teamId, StadiumId = stadiumId });
+
+            await _dbContext.SaveChangesAsync();
+
+            return await GetStadium(stadiumId);
         }
 
         private static Stadium SanitizeStadium(Stadium stadium)
