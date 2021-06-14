@@ -212,12 +212,41 @@ namespace FootballManagerApi.Tests
                     Assert.Equal(expected.Team.Name, actual.Team.Name);
                 }
             }
-
         }
 
         #endregion
 
         #region AddPlayer
+
+        [Fact]
+        public async Task AddPlayerTest_WithoutTeam()
+        {
+            var player = GetRandomPlayerModelWithoutTeam();
+            var expected = DuplicatePlayer(player);
+
+            var methodResult = await _playerRepository.AddPlayer(player);
+            var playerInDb = _dbContext.Player.Find(methodResult.Id);
+
+            // check that returned result matches database
+            Assert.Equal(methodResult.FirstName, playerInDb.FirstName);
+            Assert.Equal(methodResult.LastName, playerInDb.LastName);
+            Assert.Equal(methodResult.HeightInCentimeters, playerInDb.HeightInCentimeters);
+            Assert.Equal(methodResult.DateOfBirth, playerInDb.DateOfBirth);
+            Assert.Equal(methodResult.Nationality, playerInDb.Nationality);
+
+            // check that no team was recorded
+            Assert.Null(methodResult.Team);
+            Assert.Null(methodResult.TeamId);
+            Assert.Null(playerInDb.Team);
+            Assert.Null(playerInDb.TeamId);
+
+            // check that returned result matches the model given to the method
+            Assert.Equal(expected.FirstName, methodResult.FirstName);
+            Assert.Equal(expected.LastName, methodResult.LastName);
+            Assert.Equal(expected.HeightInCentimeters, methodResult.HeightInCentimeters);
+            Assert.Equal(expected.DateOfBirth, methodResult.DateOfBirth);
+            Assert.Equal(expected.Nationality, methodResult.Nationality);
+        }
 
         #endregion
 
