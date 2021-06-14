@@ -46,7 +46,7 @@ namespace FootballManagerApi.Tests
               .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
-        private Player GetGenericPlayerModel()
+        private Player GetRandomPlayerModelWithoutTeam()
         {
             return new Player
             {
@@ -59,7 +59,7 @@ namespace FootballManagerApi.Tests
         }
 
 
-        //I want to make new player models in case the repo changes the original when I pass it in
+        // to make new player models in case the repo changes the original model when it's passed in
         private Player DuplicatePlayer(Player player)
         {
             return new Player
@@ -79,7 +79,7 @@ namespace FootballManagerApi.Tests
         [Fact]
         public async Task GetPlayerTest_WithoutTeam()
         {
-            var player = GetGenericPlayerModel();
+            var player = GetRandomPlayerModelWithoutTeam();
             var expected = DuplicatePlayer(player);
 
             var addResult = _dbContext.Player.Add(player);
@@ -108,7 +108,7 @@ namespace FootballManagerApi.Tests
 
             await _dbContext.SaveChangesAsync();
 
-            var player = GetGenericPlayerModel();
+            var player = GetRandomPlayerModelWithoutTeam();
             player.TeamId = teamId;
             var expected = DuplicatePlayer(player);
 
@@ -142,7 +142,7 @@ namespace FootballManagerApi.Tests
             // add 10 players without teams
             for (int i = 0; i < 10; i++)
             {
-                var player = GetGenericPlayerModel();
+                var player = GetRandomPlayerModelWithoutTeam();
                 players.Add(player);
             }
 
@@ -154,7 +154,7 @@ namespace FootballManagerApi.Tests
 
             for (int i = 0; i < 10; i++)
             {
-                var player = GetGenericPlayerModel();
+                var player = GetRandomPlayerModelWithoutTeam();
                 player.TeamId = teamId;
                 player.Team = team;
                 players.Add(player);
@@ -163,7 +163,7 @@ namespace FootballManagerApi.Tests
             // add 10 players with random teams
             for (int i = 0; i < 10; i++)
             {
-                var player = GetGenericPlayerModel();
+                var player = GetRandomPlayerModelWithoutTeam();
                 var randomTeam = new Team { Name = RandomString(8) };
                 var randomTeamAddResult = _dbContext.Team.Add(randomTeam);
                 player.TeamId = (int)randomTeamAddResult.Entity.Id;
