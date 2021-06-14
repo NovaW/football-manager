@@ -83,9 +83,8 @@ namespace FootballManagerApi.Tests
             var expected = DuplicatePlayer(player);
 
             var addResult = _dbContext.Player.Add(player);
-            var playerId = (int) addResult.Entity.Id;
-
             await _dbContext.SaveChangesAsync();
+            var playerId = (int) addResult.Entity.Id;
 
             var result = await _playerRepository.GetPlayer(playerId);
 
@@ -104,18 +103,16 @@ namespace FootballManagerApi.Tests
             var expectedTeamName = RandomString(8);
             var team = new Team { Name = expectedTeamName };
             var teamAddResult = _dbContext.Team.Add(team);
-            var teamId = (int) teamAddResult.Entity.Id;
-
             await _dbContext.SaveChangesAsync();
+            var teamId = (int) teamAddResult.Entity.Id;
 
             var player = GetRandomPlayerModelWithoutTeam();
             player.TeamId = teamId;
             var expected = DuplicatePlayer(player);
 
             var playerAddResult = _dbContext.Player.Add(player);
-            var playerId = (int) playerAddResult.Entity.Id;
-
             await _dbContext.SaveChangesAsync();
+            var playerId = (int) playerAddResult.Entity.Id;
 
             var result = await _playerRepository.GetPlayer(playerId);
 
@@ -150,6 +147,7 @@ namespace FootballManagerApi.Tests
             var expectedTeamName = RandomString(8);
             var team = new Team { Name = expectedTeamName };
             var teamAddResult = _dbContext.Team.Add(team);
+            await _dbContext.SaveChangesAsync();
             var teamId = (int)teamAddResult.Entity.Id;
 
             for (int i = 0; i < 10; i++)
@@ -254,6 +252,7 @@ namespace FootballManagerApi.Tests
             var expectedTeamName = RandomString(8);
             var team = new Team { Name = expectedTeamName };
             var teamAddResult = _dbContext.Team.Add(team);
+            await _dbContext.SaveChangesAsync();
 
             var player = GetRandomPlayerModelWithoutTeam();
             player.TeamId = (int)teamAddResult.Entity.Id;
@@ -301,10 +300,11 @@ namespace FootballManagerApi.Tests
         #region RemovePlayer
 
         [Fact]
-        public async Task RemovePlayer_WithoutTeam()
+        public async Task RemovePlayerTest_WithoutTeam()
         {
             var player = GetRandomPlayerModelWithoutTeam();
             var addResult = _dbContext.Player.Add(player);
+            await _dbContext.SaveChangesAsync();
             var playerId = (int) addResult.Entity.Id;
             await _playerRepository.RemovePlayer(playerId);
 
@@ -314,16 +314,18 @@ namespace FootballManagerApi.Tests
         }
 
         [Fact]
-        public async Task RemovePlayer_WithTeam()
+        public async Task RemovePlayerTest_WithTeam()
         {
             var team = new Team { Name = RandomString(8)};
             var teamAddResult = _dbContext.Team.Add(team);
+            await _dbContext.SaveChangesAsync();
             var teamId = (int)teamAddResult.Entity.Id;
 
             var player = GetRandomPlayerModelWithoutTeam();
             player.TeamId = teamId;
 
             var playerAddResult = _dbContext.Player.Add(player);
+            await _dbContext.SaveChangesAsync();
             var playerId = (int)playerAddResult.Entity.Id;
 
             await _playerRepository.RemovePlayer(playerId);
@@ -336,6 +338,32 @@ namespace FootballManagerApi.Tests
         #endregion
 
         #region TransferPlayer
+
+        [Fact]
+        public async Task TransferPlayerTest()
+        {
+            var oldTeam = new Team { Name = RandomString(8) };
+            var oldTeamAddResult = _dbContext.Team.Add(oldTeam);
+            var oldTeamId = (int) oldTeamAddResult.Entity.Id;
+
+            var newTeam = new Team { Name = RandomString(8) };
+            var newTeamAddResult = _dbContext.Team.Add(newTeam);
+            var newTeamId = (int) newTeamAddResult.Entity.Id;
+
+            var player = GetRandomPlayerModelWithoutTeam();
+            player.TeamId = oldTeamId;
+
+            var playerAddResult = _dbContext.Player.Add(player);
+            await _dbContext.SaveChangesAsync();
+            var playerId = playerAddResult.Entity.Id;
+
+            await _playerRepository.TransferPlayer((int)playerId, newTeamId);
+
+            var playerAfterTransfer = _dbContext.Player.Find(playerId);
+
+            // check that player's TeamId has changed
+            Assert.Equal(newTeamId, playerAfterTransfer.TeamId);
+        }
 
         #endregion
     }
