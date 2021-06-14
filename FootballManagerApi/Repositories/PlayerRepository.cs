@@ -12,12 +12,8 @@ namespace FootballManagerApi
     {
         private FootballManagerContext _dbContext;
 
-        //public PlayerRepository(FootballManagerContext dbContext){
-        //    _dbContext = dbContext;
-        //}
-        public PlayerRepository()
-        {
-            _dbContext = new FootballManagerContext();
+        public PlayerRepository(FootballManagerContext dbContext){
+            _dbContext = dbContext;
         }
 
         public async Task<Player> GetPlayer(int playerId){

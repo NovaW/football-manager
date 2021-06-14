@@ -10,12 +10,9 @@ namespace FootballManagerApi
     public class TeamRepository : ITeamRepository
     {
         private FootballManagerContext _dbContext;
-        //public TeamRepository(FootballManagerContext dbContext){
-        //    _dbContext = dbContext;
-        //}
-        public TeamRepository()
-        {
-            _dbContext = new FootballManagerContext();
+
+        public TeamRepository(FootballManagerContext dbContext){
+            _dbContext = dbContext;
         }
 
         public async Task<Team> GetTeam(int teamId) {

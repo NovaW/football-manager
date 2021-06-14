@@ -28,10 +28,10 @@ namespace FootballManagerApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            //services.AddTransient<FootballManagerContext, FootballManagerContext>(); //TODO NW: fix up dependency injection
             services.AddSingleton<IPlayerRepository, PlayerRepository>();
             services.AddSingleton<IStadiumRepository, StadiumRepository>();
             services.AddSingleton<ITeamRepository, TeamRepository>();
+            services.AddDbContext<FootballManagerContext>(ServiceLifetime.Singleton);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
