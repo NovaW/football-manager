@@ -49,8 +49,6 @@ namespace FootballManagerApi
                 .Where(x => x.TeamId == teamId || x.StadiumId == stadiumId);
             _dbContext.RemoveRange(existingLinks);
 
-            //TODO NW: bug when linking teams and stadiums when links already exist
-
             await _dbContext.SaveChangesAsync();
 
             _dbContext.StadiumTeam

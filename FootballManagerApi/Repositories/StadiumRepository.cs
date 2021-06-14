@@ -56,7 +56,7 @@ namespace FootballManagerApi
                 {
                     Id = stadium.StadiumTeam.Id,
                     StadiumId = stadium.StadiumTeam.StadiumId,
-                    TeamId = stadium.StadiumTeam.Id,
+                    TeamId = stadium.StadiumTeam.TeamId,
                 }
             };
         }

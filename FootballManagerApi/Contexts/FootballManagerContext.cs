@@ -45,12 +45,14 @@ namespace FootballManagerApi.Contexts
             modelBuilder.Entity<StadiumTeam>()
                 .HasOne(x => x.Team)
                 .WithOne(x => x.StadiumTeam)
-                .HasForeignKey<StadiumTeam>(x => x.TeamId);
+                .HasForeignKey<StadiumTeam>(x => x.TeamId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<StadiumTeam>()
                 .HasOne(x => x.Stadium)
                 .WithOne(x => x.StadiumTeam)
-                .HasForeignKey<StadiumTeam>(x => x.StadiumId);
+                .HasForeignKey<StadiumTeam>(x => x.StadiumId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             OnModelCreatingPartial(modelBuilder);
         }
