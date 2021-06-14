@@ -38,9 +38,9 @@ namespace FootballManagerApi.Contexts
             modelBuilder.Entity<StadiumTeam>().HasIndex(x => x.Id);
 
             modelBuilder.Entity<Player>()
-                .HasOne(x => x.Team)
-                .WithMany(x => x.Players)
-                .HasForeignKey(x => x.TeamId);
+            .HasOne(x => x.Team)
+            .WithMany(x => x.Players)
+            .HasForeignKey(x => x.TeamId);
 
             modelBuilder.Entity<StadiumTeam>()
                 .HasOne(x => x.Team)

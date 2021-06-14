@@ -26,6 +26,7 @@ namespace FootballManagerApi
 
         public async Task<IEnumerable<Player>> GetAllPlayers(){
             return await _dbContext.Player
+                .Include(x => x.Team)
                 .Select(p => SanitizePlayer(p))
                 .ToListAsync();
         }

@@ -19,12 +19,20 @@ namespace FootballManagerApi
         }
 
         public async Task<Team> GetTeam(int teamId) {
-            throw new NotImplementedException();
+            var team = await _dbContext.Team
+                .Include(x => x.StadiumTeam)
+                    .ThenInclude(x => x.Stadium)
+                .Include(x => x.Players)
+                .FirstAsync(x => x.Id == teamId);
+
+            return SanitizeTeam(team);
         }
 
         public async Task<IEnumerable<Team>> GetAllTeams() {
             return await _dbContext.Team
-                .Include(x => x.StadiumTeam) // TODO NW: Is this necessary?
+                .Include(x => x.StadiumTeam)
+                    .ThenInclude(x => x.Stadium)
+                .Include(x => x.Players)
                 .Select(x => SanitizeTeam(x))
                 .ToListAsync();
         }
@@ -32,7 +40,7 @@ namespace FootballManagerApi
         public async Task<Team> AddTeam(Team team) {
             var result = _dbContext.Team.Add(team);
             await _dbContext.SaveChangesAsync();
-            return SanitizeTeam(result.Entity);
+            return await GetTeam((int)result.Entity.Id);
         }
 
         public async Task<Team> RemoveTeam(int teamId) {
@@ -56,8 +64,7 @@ namespace FootballManagerApi
 
             await _dbContext.SaveChangesAsync();
 
-            var team = _dbContext.Team.Find((long)teamId);
-            return SanitizeTeam(team);
+            return await GetTeam(teamId);
         }
 
         private static Team SanitizeTeam(Team team)
@@ -83,7 +90,13 @@ namespace FootballManagerApi
                 {
                     Id = team.StadiumTeam.Id,
                     TeamId = team.StadiumTeam.TeamId,
-                    StadiumId = team.StadiumTeam.StadiumId
+                    StadiumId = team.StadiumTeam.StadiumId,
+                    Stadium = team.StadiumTeam.Stadium == null ? null : new Stadium
+                    {
+                        Id = team.StadiumTeam.Stadium.Id,
+                        Name = team.StadiumTeam.Stadium.Name,
+                        Location = team.StadiumTeam.Stadium.Location
+                    }
                 }
             };
 

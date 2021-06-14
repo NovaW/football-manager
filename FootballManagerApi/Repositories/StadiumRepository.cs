@@ -25,7 +25,8 @@ namespace FootballManagerApi
 
         public async Task<IEnumerable<Stadium>> GetAllStadiums(){
             return await _dbContext.Stadium
-                .Include(x => x.StadiumTeam) //TODO NW
+                .Include(x => x.StadiumTeam)
+                    .ThenInclude(x => x.Team)
                 .Select(x => SanitizeStadium(x))
                 .ToListAsync();
         }
@@ -57,6 +58,11 @@ namespace FootballManagerApi
                     Id = stadium.StadiumTeam.Id,
                     StadiumId = stadium.StadiumTeam.StadiumId,
                     TeamId = stadium.StadiumTeam.TeamId,
+                    Team = stadium.StadiumTeam.Team == null ? null : new Team
+                    {
+                        Id = stadium.StadiumTeam.Team.Id,
+                        Name = stadium.StadiumTeam.Team.Name
+                    }
                 }
             };
         }
