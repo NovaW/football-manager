@@ -248,6 +248,54 @@ namespace FootballManagerApi.Tests
             Assert.Equal(expected.Nationality, methodResult.Nationality);
         }
 
+        [Fact]
+        public async Task AddPlayerTest_WithTeam()
+        {
+            var expectedTeamName = RandomString(8);
+            var team = new Team { Name = expectedTeamName };
+            var teamAddResult = _dbContext.Team.Add(team);
+
+            var player = GetRandomPlayerModelWithoutTeam();
+            player.TeamId = (int)teamAddResult.Entity.Id;
+            var expected = DuplicatePlayer(player);
+
+            var methodResult = await _playerRepository.AddPlayer(player);
+            var playerInDb = _dbContext.Player.Find(methodResult.Id);
+
+            // check that returned result matches database
+            Assert.Equal(methodResult.FirstName, playerInDb.FirstName);
+            Assert.Equal(methodResult.LastName, playerInDb.LastName);
+            Assert.Equal(methodResult.HeightInCentimeters, playerInDb.HeightInCentimeters);
+            Assert.Equal(methodResult.DateOfBirth, playerInDb.DateOfBirth);
+            Assert.Equal(methodResult.Nationality, playerInDb.Nationality);
+
+            // check that a team was recorded
+            Assert.NotNull(methodResult.Team);
+            Assert.NotNull(methodResult.TeamId);
+            Assert.NotNull(playerInDb.Team);
+            Assert.NotNull(playerInDb.TeamId);
+
+            // check that team Id is consistent
+            Assert.Equal(methodResult.TeamId, methodResult.Team.Id);
+            Assert.Equal(playerInDb.TeamId, playerInDb.Team.Id);
+
+            // check that team details match on returned result and db result
+            Assert.Equal(methodResult.TeamId, playerInDb.TeamId);
+            Assert.Equal(methodResult.Team.Id, playerInDb.Team.Id);
+            Assert.Equal(methodResult.Team.Name, playerInDb.Team.Name);
+
+            // check that returned result matches the model given to the method
+            Assert.Equal(expected.FirstName, methodResult.FirstName);
+            Assert.Equal(expected.LastName, methodResult.LastName);
+            Assert.Equal(expected.HeightInCentimeters, methodResult.HeightInCentimeters);
+            Assert.Equal(expected.DateOfBirth, methodResult.DateOfBirth);
+            Assert.Equal(expected.Nationality, methodResult.Nationality);
+
+            // check that team details are as expected
+            Assert.Equal(expected.TeamId, methodResult.TeamId);
+            Assert.Equal(expectedTeamName, methodResult.Team.Name);
+        }
+
         #endregion
 
         #region RemovePlayer
