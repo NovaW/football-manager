@@ -300,6 +300,39 @@ namespace FootballManagerApi.Tests
 
         #region RemovePlayer
 
+        [Fact]
+        public async Task RemovePlayer_WithoutTeam()
+        {
+            var player = GetRandomPlayerModelWithoutTeam();
+            var addResult = _dbContext.Player.Add(player);
+            var playerId = (int) addResult.Entity.Id;
+            await _playerRepository.RemovePlayer(playerId);
+
+            // check player was removed from DB
+            var numberOfDatabaseMatches = _dbContext.Player.Count(x => x.Id == playerId);
+            Assert.Equal(0, numberOfDatabaseMatches);
+        }
+
+        [Fact]
+        public async Task RemovePlayer_WithTeam()
+        {
+            var team = new Team { Name = RandomString(8)};
+            var teamAddResult = _dbContext.Team.Add(team);
+            var teamId = (int)teamAddResult.Entity.Id;
+
+            var player = GetRandomPlayerModelWithoutTeam();
+            player.TeamId = teamId;
+
+            var playerAddResult = _dbContext.Player.Add(player);
+            var playerId = (int)playerAddResult.Entity.Id;
+
+            await _playerRepository.RemovePlayer(playerId);
+
+            // check player was removed from DB
+            var numberOfDatabaseMatches = _dbContext.Player.Count(x => x.Id == playerId);
+            Assert.Equal(0, numberOfDatabaseMatches);
+        }
+
         #endregion
 
         #region TransferPlayer
