@@ -28,7 +28,7 @@ namespace FootballManagerApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddTransient<FootballManagerContext, FootballManagerContext>();
+            //services.AddTransient<FootballManagerContext, FootballManagerContext>(); //TODO NW: fix up dependency injection
             services.AddSingleton<IPlayerRepository, PlayerRepository>();
             services.AddSingleton<IStadiumRepository, StadiumRepository>();
             services.AddSingleton<ITeamRepository, TeamRepository>();

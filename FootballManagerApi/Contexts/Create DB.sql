@@ -1,0 +1,31 @@
+--sqlite3 database
+
+CREATE TABLE `Team` (
+	`Id`	INTEGER PRIMARY KEY AUTOINCREMENT,
+	`Name`	TEXT
+);
+
+CREATE TABLE `Stadium` (
+	`Id`	INTEGER PRIMARY KEY AUTOINCREMENT,
+	`Name`	TEXT,
+	`Location`	TEXT
+);
+
+CREATE TABLE `Player` (
+	`Id`	INTEGER PRIMARY KEY AUTOINCREMENT,
+	`FirstName`	TEXT,
+	`LastName`	TEXT,
+	`HeightInCentimeters`	INTEGER,
+	`DateOfBirth`	TEXT,
+	`Nationality`	TEXT,
+	`TeamId`	INTEGER NULL,
+	FOREIGN KEY(TeamId) REFERENCES Team(Id)
+);
+
+CREATE TABLE `StadiumTeam` (
+	`Id`	INTEGER PRIMARY KEY AUTOINCREMENT,
+	`StadiumId` INTEGER,
+	`TeamId` INTEGER,
+	FOREIGN KEY(StadiumId) REFERENCES Stadium(Id),
+	FOREIGN KEY(TeamId) REFERENCES Team(Id)
+);

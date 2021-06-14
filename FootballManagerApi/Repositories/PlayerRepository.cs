@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System;
 using FootballManagerApi.Contexts;
+using Microsoft.EntityFrameworkCore;
 
 namespace FootballManagerApi
 {
@@ -11,8 +12,12 @@ namespace FootballManagerApi
     {
         private FootballManagerContext _dbContext;
 
-        public PlayerRepository(FootballManagerContext dbContext){
-            _dbContext = dbContext;
+        //public PlayerRepository(FootballManagerContext dbContext){
+        //    _dbContext = dbContext;
+        //}
+        public PlayerRepository()
+        {
+            _dbContext = new FootballManagerContext();
         }
 
         public async Task<Player> GetPlayer(int playerId){
@@ -20,11 +25,15 @@ namespace FootballManagerApi
         }
 
         public async Task<IEnumerable<Player>> GetAllPlayers(){
-            throw new NotImplementedException();
+            return await _dbContext.Player
+                .Select(p => SanitizePlayer(p))
+                .ToListAsync();
         }
 
         public async Task<Player> AddPlayer(Player player){
-            throw new NotImplementedException();
+            var result = _dbContext.Player.Add(player);
+            await _dbContext.SaveChangesAsync();
+            return SanitizePlayer(result.Entity);
         }
 
         public async Task<Player> RemovePlayer(int playerId){
@@ -33,6 +42,26 @@ namespace FootballManagerApi
     
         public async Task<Player> TransferPlayer(int playerId, int newTeamId) {
             throw new NotImplementedException();
+        }
+
+        private static Player SanitizePlayer(Player player)
+        {
+            if(player == null) { return null; }
+            return new Player
+            {
+                Id = player.Id,
+                FirstName = player.FirstName,
+                LastName = player.LastName,
+                HeightInCentimeters = player.HeightInCentimeters,
+                DateOfBirth = player.DateOfBirth,
+                Nationality = player.Nationality,
+                TeamId = player.TeamId,
+                Team = player.Team == null ? null : new Team
+                {
+                    Id = player.Team.Id,
+                    Name = player.Team.Name
+                }
+            };
         }
     }
 }

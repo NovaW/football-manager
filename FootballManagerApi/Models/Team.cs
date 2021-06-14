@@ -8,7 +8,6 @@ namespace FootballManagerApi.Models
         public long Id { get; set; }
         public string Name { get; set; }
         public IEnumerable<Player> Players { get; set; }
-        public StadiumTeamLink StadiumTeamLink { get; set; }
-        public long? StadiumTeamLink_TeamId { get; set; }
+        public StadiumTeam StadiumTeam { get; set; }
     }
 }

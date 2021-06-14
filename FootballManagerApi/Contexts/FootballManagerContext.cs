@@ -18,7 +18,7 @@ namespace FootballManagerApi.Contexts
 
         public virtual DbSet<Player> Player { get; set; }
         public virtual DbSet<Stadium> Stadium { get; set; }
-        public virtual DbSet<StadiumTeamLink> StadiumTeamLink { get; set; }
+        public virtual DbSet<StadiumTeam> StadiumTeam { get; set; }
         public virtual DbSet<Team> Team { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -32,49 +32,25 @@ namespace FootballManagerApi.Contexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Player>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever(); //TODO NW: is this necessary? similar with others in file
-            });
+            modelBuilder.Entity<Player>().HasIndex(x => x.Id);
+            modelBuilder.Entity<Team>().HasIndex(x => x.Id);
+            modelBuilder.Entity<Stadium>().HasIndex(x => x.Id);
+            modelBuilder.Entity<StadiumTeam>().HasIndex(x => x.Id);
 
-            modelBuilder.Entity<Stadium>(entity =>
-            {
-                entity
-                    .HasOne(e => e.StadiumTeamLink)
-                    .WithOne(e => e.Stadium)
-                    .HasForeignKey<StadiumTeamLink>(e => e.StadiumId);
+            modelBuilder.Entity<Player>()
+                .HasOne(x => x.Team)
+                .WithMany(x => x.Players)
+                .HasForeignKey(x => x.TeamId);
 
-                entity.Property(e => e.Id).ValueGeneratedNever(); 
+            modelBuilder.Entity<StadiumTeam>()
+                .HasOne(x => x.Team)
+                .WithOne(x => x.StadiumTeam)
+                .HasForeignKey<StadiumTeam>(x => x.TeamId);
 
-
-            });
-
-            modelBuilder.Entity<StadiumTeamLink>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.HasIndex(e => e.StadiumId)
-                    .IsUnique();
-
-                entity.HasIndex(e => e.TeamId)
-                    .IsUnique();
-            });
-
-            modelBuilder.Entity<Team>(entity =>
-            {
-                entity
-                    .HasOne(e => e.StadiumTeamLink)
-                    .WithOne(e => e.Team)
-                    .HasForeignKey<StadiumTeamLink>(e => e.StadiumId);
-
-                entity
-                    .HasMany(x => x.Players)
-                    .WithOne(x => x.Team)
-                    .HasForeignKey(x => x.TeamId);
-
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-            });
+            modelBuilder.Entity<StadiumTeam>()
+                .HasOne(x => x.Stadium)
+                .WithOne(x => x.StadiumTeam)
+                .HasForeignKey<StadiumTeam>(x => x.StadiumId);
 
             OnModelCreatingPartial(modelBuilder);
         }

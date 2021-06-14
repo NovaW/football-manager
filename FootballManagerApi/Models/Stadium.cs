@@ -8,7 +8,6 @@ namespace FootballManagerApi.Models
         public long Id { get; set; }
         public string Name { get; set; }
         public string Location { get; set; }
-        public StadiumTeamLink StadiumTeamLink { get; set; }
-        public long? StadiumTeamLink_StadiumId { get; set; }
+        public StadiumTeam StadiumTeam { get; set; }
     }
 }
