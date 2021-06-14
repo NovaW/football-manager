@@ -17,10 +17,13 @@ namespace FootballManagerApi
         }
 
         public async Task<Player> GetPlayer(int playerId){
-            var player = await _dbContext.Player
+            var matches = _dbContext.Player
                     .Include(x => x.Team)
-                    .FirstAsync(x => x.Id == playerId);
-            return SanitizePlayer(player);
+                    .Where(x => x.Id == playerId);
+
+            if(!matches.Any()) { return null; }
+
+            return SanitizePlayer(matches.First());
         }
 
         public async Task<IEnumerable<Player>> GetAllPlayers(){
@@ -37,7 +40,16 @@ namespace FootballManagerApi
         }
 
         public async Task<Player> RemovePlayer(int playerId){
-            throw new NotImplementedException();
+            var matches = await _dbContext.Player
+                .Include(x => x.Team)
+                .Where(x => x.Id == playerId)
+                .ToListAsync();
+
+            if(!matches.Any()) { return null; }
+
+            _dbContext.Player.Remove(matches.First());
+            await _dbContext.SaveChangesAsync();
+            return matches.First();
         }
     
         public async Task<Player> TransferPlayer(int playerId, int newTeamId) {

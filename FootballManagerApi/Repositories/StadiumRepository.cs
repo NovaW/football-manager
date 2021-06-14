@@ -16,11 +16,14 @@ namespace FootballManagerApi
         }
 
         public async Task<Stadium> GetStadium(int stadiumId){
-            var stadium = await _dbContext.Stadium
+            var matches = _dbContext.Stadium
                     .Include(x => x.StadiumTeam)
                         .ThenInclude(x => x.Team)
-                    .FirstAsync(x => x.Id == stadiumId);
-            return SanitizeStadium(stadium);
+                    .Where(x => x.Id == stadiumId);
+
+            if(!matches.Any()) { return null; }
+
+            return SanitizeStadium(matches.First());
         }
 
         public async Task<IEnumerable<Stadium>> GetAllStadiums(){
@@ -38,7 +41,17 @@ namespace FootballManagerApi
         }
 
         public async Task<Stadium> RemoveStadium(int stadiumId){
-            throw new NotImplementedException();
+            var matches = await _dbContext.Stadium
+                .Include(x => x.StadiumTeam)
+                    .ThenInclude(x => x.Team)
+                .Where(x => x.Id == stadiumId)
+                .ToListAsync();
+
+            if (!matches.Any()) { return null; }
+
+            _dbContext.Stadium.Remove(matches.First());
+            await _dbContext.SaveChangesAsync();
+            return matches.First();
         }
 
         public async Task<Stadium> LinkStadiumToTeam(int stadiumId, int teamId){
