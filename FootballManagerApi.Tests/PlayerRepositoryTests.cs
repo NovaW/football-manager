@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using FootballManagerApi.Contexts;
 using FootballManagerApi.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace FootballManagerApi.Tests
@@ -17,8 +19,13 @@ namespace FootballManagerApi.Tests
         //setup before each test
         public PlayerRepositoryTests()
         {
+            var serviceProvider = new ServiceCollection()
+                .AddEntityFrameworkInMemoryDatabase()
+                .BuildServiceProvider();
+
             var options = new DbContextOptionsBuilder<FootballManagerContext>()
-            .UseInMemoryDatabase(databaseName: "FootballManager")
+            .UseInMemoryDatabase(databaseName: "TestFootballManager")
+            .UseInternalServiceProvider(serviceProvider)
             .Options;
 
             _dbContext = new FootballManagerContext(options);
@@ -127,7 +134,86 @@ namespace FootballManagerApi.Tests
 
         #region GetAllPlayers
 
+        [Fact]
+        public async Task GetAllPlayersTest()
+        {
+            var players = new List<Player>();
 
+            // add 10 players without teams
+            for (int i = 0; i < 10; i++)
+            {
+                var player = GetGenericPlayerModel();
+                players.Add(player);
+            }
+
+            // add 10 players with the same team
+            var expectedTeamName = RandomString(8);
+            var team = new Team { Name = expectedTeamName };
+            var teamAddResult = _dbContext.Team.Add(team);
+            var teamId = (int)teamAddResult.Entity.Id;
+
+            for (int i = 0; i < 10; i++)
+            {
+                var player = GetGenericPlayerModel();
+                player.TeamId = teamId;
+                player.Team = team;
+                players.Add(player);
+            }
+
+            // add 10 players with random teams
+            for (int i = 0; i < 10; i++)
+            {
+                var player = GetGenericPlayerModel();
+                var randomTeam = new Team { Name = RandomString(8) };
+                var randomTeamAddResult = _dbContext.Team.Add(randomTeam);
+                player.TeamId = (int)randomTeamAddResult.Entity.Id;
+                players.Add(player);
+            }
+
+            var expectedResults = new Dictionary<long, Player>();
+
+            // add all players to DB
+            foreach (var player in players)
+            {
+                var addResult = _dbContext.Player.Add(player);
+                await _dbContext.SaveChangesAsync();
+
+                var playerId = addResult.Entity.Id;
+                var expectedResult = DuplicatePlayer(player);
+                expectedResult.Id = playerId;
+
+                expectedResults.Add(playerId, expectedResult);
+            }
+
+            var actualResults = await _playerRepository.GetAllPlayers();
+
+            // Check same number of results
+            Assert.Equal(expectedResults.Count(), actualResults.Count());
+
+            // Check details match
+            foreach (var actual in actualResults)
+            {
+                var expected = expectedResults[actual.Id];
+
+                Assert.Equal(expected.FirstName, actual.FirstName);
+                Assert.Equal(expected.LastName, actual.LastName);
+                Assert.Equal(expected.HeightInCentimeters, actual.HeightInCentimeters);
+                Assert.Equal(expected.DateOfBirth, actual.DateOfBirth);
+                Assert.Equal(expected.Nationality, actual.Nationality);
+                Assert.Equal(expected.TeamId, actual.TeamId);
+                if (expected.Team == null)
+                {
+                    Assert.Null(actual.Team);
+                }
+                else
+                {
+                    Assert.NotNull(actual.Team);
+                    Assert.Equal(expected.Team.Id, actual.Team.Id);
+                    Assert.Equal(expected.Team.Name, actual.Team.Name);
+                }
+            }
+
+        }
 
         #endregion
 
